@@ -1,0 +1,34 @@
+package interface_Graphique.prof_mvc;
+
+import interface_Graphique.student_mvc.StudentController;
+import interface_Graphique.student_mvc.StudentModel;
+import interface_Graphique.student_mvc.StudentView;
+
+public class ProfController {
+	ProfModel model;
+	ProfView view;
+	public ProfController(ProfModel model, ProfView view) {
+		this.model = model;
+		this.view = view;
+	}
+	
+	 public void control(){       
+         
+	        view.getButton1().addActionListener(e ->{
+	            System.out.println("Consultation Emploi du temps");
+	          	StudentModel s_model = new StudentModel(model.getDb());
+	        	StudentView s_view = new StudentView(model.getDb().getPromos());
+	        	StudentController s_controller = new StudentController(s_model, s_view);
+	        	s_controller.control();
+	            
+	        });   
+	        
+	        view.getButton2().addActionListener(e ->{
+	        	System.out.println("Consultation Emploi du temps");
+	          	SallesLibresModel s_model = new SallesLibresModel(model.getDb());
+	        	StudentView s_view = new StudentView(model.getDb().getPromos());
+	        	StudentController s_controller = new StudentController(s_model, s_view);
+	        	s_controller.control();
+	        });   
+	    }
+}

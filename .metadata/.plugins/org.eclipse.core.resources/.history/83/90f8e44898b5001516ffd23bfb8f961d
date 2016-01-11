@@ -1,0 +1,15 @@
+package interface_Graphique.salles_libres_mvc;
+
+public class SallesLibresController {
+	SallesLibresModel model;
+	SallesLibresView view;
+
+	public SallesLibresController(SallesLibresModel model, SallesLibresView view) {
+		this.model = model;
+		this.view = view;
+	}
+
+	public void control() {
+
+	}
+}

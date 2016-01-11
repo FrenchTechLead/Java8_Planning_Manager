@@ -1,0 +1,18 @@
+package interface_Graphique.prof_mvc;
+
+public class ProfController {
+	ProfModel model;
+	ProfView view;
+	public ProfController(ProfModel model, ProfView view) {
+		this.model = model;
+		this.view = view;
+	}
+	
+	 public void control(){       
+         
+	        view.getButton1().addActionListener(e ->{
+	            System.out.println("Consultation Emploi du temps");
+	            
+	        });   
+	    }
+}

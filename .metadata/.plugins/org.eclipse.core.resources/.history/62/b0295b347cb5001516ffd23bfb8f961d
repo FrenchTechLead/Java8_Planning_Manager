@@ -1,0 +1,5 @@
+package interface_Graphique.prof_mvc;
+
+public class ProfController {
+
+}

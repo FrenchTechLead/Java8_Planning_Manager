@@ -1,0 +1,30 @@
+package interface_Graphique.salles_libres_mvc;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
+public class SallesLibresController {
+	SallesLibresModel model;
+	SallesLibresView view;
+
+	public SallesLibresController(SallesLibresModel model, SallesLibresView view) {
+		this.model = model;
+		this.view = view;
+	}
+
+	public void control() {
+		view.getButton().addActionListener(e ->{
+            this.getSallesLibres();
+            
+        });   
+	}
+	
+	public void getSallesLibres(){
+		Date selectedDate = (Date)view.getDatePicker().getModel().getValue();
+		
+		Timestamp debut = new Timestamp(year, month, date, hour, minute, second, nano);
+		Timestamp fin;
+		
+		model.getDb().freeFromTo(debut, fin)
+	}
+}

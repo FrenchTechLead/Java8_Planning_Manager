@@ -1,0 +1,82 @@
+package interface_Graphique.salles_libres_mvc;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
+import allTables.Promos;
+import interface_Graphique.student_mvc.DateLabelFormatter;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+
+public class SallesLibresView {
+	JFrame frame;
+    private JLabel heuresLabel;
+    private JLabel minutesLabel;
+    private JLabel dateLabel;
+    private JComboBox<Integer> heures;
+    private JComboBox<Integer> minutes; 
+    private JDatePickerImpl datePicker;
+    private JTextArea textArea;
+	
+	public SallesLibresView(){
+		frame = new JFrame("ADE V9999 Emploi du temps");                                    
+        frame.getContentPane().setLayout(new BorderLayout());                                          
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);           
+        frame.setSize(800,600);        
+        frame.setVisible(true);
+        frame.setLayout(null);
+        frame.setResizable(false);
+        
+        heuresLabel = new JLabel("Heure :");
+        heuresLabel.setBounds(10, 10, 250, 32);
+        frame.getContentPane().add(heuresLabel);
+        
+        heures  = new JComboBox<Integer>();
+        heures.setBounds(10, 40, 150, 32);
+        for (int i =0 ; i<24 ;i++)heures.addItem(new Integer(i));
+        frame.getContentPane().add(heures);
+        
+        minutesLabel = new JLabel("Minutes :");
+        minutesLabel.setBounds(200, 10, 250, 32);
+        frame.getContentPane().add(minutesLabel);
+        
+        minutes  = new JComboBox<Integer>();
+        minutes.setBounds(200, 40, 150, 32);
+        for (int i =0 ; i<60 ;i++)minutes.addItem(new Integer(i));
+        frame.getContentPane().add(minutes);
+        
+        dateLabel = new JLabel("Date :");
+        dateLabel.setBounds(530, 10, 250, 32);
+        frame.getContentPane().add(dateLabel);
+        
+        textArea = new JTextArea();
+        textArea.setBounds(10, 250, 773, 300);
+        textArea.setBackground(Color.pink);
+        frame.getContentPane().add(textArea);
+        
+        
+        UtilDateModel dateModel = new UtilDateModel();
+        //model.setDate(20,04,2014);
+        // Need this...
+        Properties p = new Properties();
+        p.put("text.today", "Today");
+        p.put("text.month", "Month");
+        p.put("text.year", "Year");
+        JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
+        // Don't know about the formatter, but there it is...
+        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePanel.setBounds(530, 40, 250, 200);
+        frame.getContentPane().add(datePanel);
+		
+	}
+
+}

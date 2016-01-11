@@ -1,0 +1,67 @@
+package interface_Graphique.student_mvc;
+
+import interface_Graphique.student_mvc.StudentModel;
+import interface_Graphique.student_mvc.StudentView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import allTables.Promos;
+import allTables.Seances;
+import allTables.Users;
+
+public class StudentController {
+	 private StudentModel model;
+	    private StudentView view;
+	    private Users user ;
+	    
+	    public StudentController(StudentModel model, StudentView view){
+	        this.model = model;
+	        this.view = view;
+	        this.user = null;
+	    }
+	    
+	    public void contol(){       
+	              
+	        view.getPromosCombo().addActionListener(e ->{
+	            showPlanning();
+	            
+	        });
+	        view.getDate().addActionListener(e ->{
+	            showPlanning();
+	            
+	        });
+	    }
+
+	    private void showPlanning(){
+	    	Promos selectedPromos = (Promos) view.getPromosCombo().getSelectedItem();
+	    	int promosId = selectedPromos.getId();
+	    	
+	    	Date selectedDate = (Date)view.getDate().getModel().getValue();
+	    	if (selectedDate == null)selectedDate = new Date();
+	    	
+	    	String toDisplay = "";
+	    	List<Seances> returnedList =model.getDb().getPlanningByDayByPromos(selectedDate,promosId );
+	    	if(returnedList.size()>0){
+	    	for (Seances item : returnedList){
+	    		DateFormat formatter = new SimpleDateFormat("HH:mm");
+	    		String debut = formatter.format(item.getDebut().getTime());
+	    		String fin =formatter.format(item.getFin().getTime());
+	    		
+	    		toDisplay = toDisplay+item.getType()+": "+model.getDb().getCoursNameById(item.getCours_id())+
+	    				" Debut: "+debut+
+	    				" Fin: "+fin+"\n";
+	    		
+	    		item.getDebut().getTime();
+	    	}
+	    	}
+	    	view.getTextArea().setText(toDisplay);
+	    }    
+	    
+	    public Users getCurrentUser(){
+	    	return this.user;
+	    }
+}

@@ -1,0 +1,245 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package allTables;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.*;
+
+import org.apache.commons.lang3.time.DateUtils;
+
+import memoryDatabaseExchange.DbConnection;
+
+/**
+ *
+ * @author user
+ */
+public class Database {
+
+    private ArrayList<Batiments> batiments;
+    private ArrayList<Cours> cours;
+    private ArrayList<Promos> promos;
+    private ArrayList<Salles> salles;
+    private ArrayList<Seances> seances;
+    private ArrayList<Users> users;
+
+    public <T> void addItem(T item) {
+        if (item instanceof Batiments) {
+            this.batiments.add((Batiments) item);
+        } else if (item instanceof Cours) {
+            this.cours.add((Cours) item);
+        } else if (item instanceof Promos) {
+            this.promos.add((Promos) item);
+        } else if (item instanceof Salles) {
+            this.salles.add((Salles) item);
+        } else if (item instanceof Seances) {
+            this.seances.add((Seances) item);
+        } else if (item instanceof Users) {
+            this.users.add((Users) item);
+        }
+    }
+
+
+    public ArrayList<Salles> freeFromTo2(Timestamp debut, Timestamp fin) {
+    	
+    	List<Integer> IdSallesOccupéesDansCeCreneau = new ArrayList<>();
+    	
+    	// salles occupées dans le créneau selectionné
+    	IdSallesOccupéesDansCeCreneau = getSeances().stream()
+    			.filter(s -> ( s.getDebut().before(debut) && s.getFin().after(debut) ) ||
+    					     ( s.getDebut().before(fin) && s.getFin().after(fin)     )||
+    					     ( debut.before(s.getDebut()) && fin.after(s.getFin())	)
+    					     ).map( s -> s.getSalle_id()).distinct()
+    					     .collect(Collectors.toList());
+    	
+    	System.out.println(IdSallesOccupéesDansCeCreneau);
+    	ArrayList<Salles> toReturn = getSalles();
+    	for(Salles item : toReturn){
+    		for(Integer id : IdSallesOccupéesDansCeCreneau){
+    			if(item.getId()== id)toReturn.remove(item);
+    		}
+    	}
+    	
+    	if(debut.after(fin))toReturn.clear();
+    	return toReturn;
+    }
+    
+
+    //TO MOVE TO A BETTER PLACE
+    public void displayRoomsUsedBy(Promos promo) {
+        ArrayList<Salles> rooms = roomsUsedBy(promo);
+        rooms.stream()
+                .forEach(s -> System.out.println(s.toString()));
+    }
+
+    public ArrayList<Salles> roomsUsedBy(Promos promo) {
+        ArrayList<Salles> retour = new ArrayList<>();
+
+        getSeances().stream()
+                .filter(s -> s.getPromos_id() == promo.getId())
+                .mapToInt(s -> s.getSalle_id())
+                .distinct()
+                .forEach(id -> retour.add(getSallesById(id)));
+        return retour;
+    }
+    
+    public Stream<Salles> getSallesDansBat (Batiments b) {
+        return getSalles().stream()
+                .filter(s-> s.getBatiment_id()==b.getId()) ;
+    }
+
+    public String timestampFormat(Timestamp t) {
+        int i = t.getYear() + 1900;
+        String s = "";
+        s.concat(i + "-" + t.getMonth() + "-" + t.getDay() + " " + t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds());
+        return s;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void bookRoom(Salles salle, Cours cours, Timestamp debut, Timestamp fin, Promos promo, String type) throws SQLException {
+        int id_prof = getUsers().stream()
+                .filter(u -> u.getNom().equals(cours.getProf_responsable()))
+                .collect(Collectors.toList())
+                .get(0).getId();
+
+        String query = "INSERT INTO Seances VALUES ( '" + timestampFormat(debut) + "','" + timestampFormat(fin) + "','" + cours.getId() + "','"
+                + salle.getId() + "','" + id_prof + "','" + promo.getId() + "','" + type + "')";
+        ResultSet result = DbConnection.getStatement().executeQuery(query);
+        String prof_name = cours.getProf_responsable();
+
+        int id = 0; //la vraie id sera récupérée après avoir été décidée par SQL
+        Seances s = new Seances(id, debut, fin, cours.getId(), salle.getId(), id_prof, promo.getId(), type);
+        result = DbConnection.getStatement().executeQuery("SELECT seance_id FROM Seances WHERE heure_debut = " + timestampFormat(debut) + "and salle_id =" + salle.getId());
+
+        if (result.first()) {
+            id = result.getInt(1);
+        }
+        s.setId(id);
+        addItem(s);
+    }
+
+    @SuppressWarnings("deprecation")
+    public List<Seances> getPlanningByDayByPromos(Date date, int promosId) {
+        Comparator<Seances> byTimeStamp = (e1, e2) -> e1.getDebut().compareTo(e2.getFin()); //pour trier par heure de debut
+
+        return this.seances.stream().filter(seance -> seance.getPromos_id() == promosId
+                && DateUtils.isSameDay(seance.debut, date))
+                .sorted(byTimeStamp).collect(Collectors.toList());
+
+    }
+
+    public String getCoursNameById(int id) {
+
+        try {
+            return this.cours.stream().
+                    filter(cours -> cours.getId() == id).
+                    map(cours -> cours.getNom()).
+                    collect(Collectors.toList()).
+                    get(0);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("aucun cours!");
+            return "";
+        }
+
+    }
+
+    public Cours getCoursById(int id) {
+        return this.cours.stream().
+                filter(c -> c.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    public Batiments getBatimentsById(int id) {
+        return this.batiments.stream().
+                filter(b -> b.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    public Promos getPromosById(int id) {
+        return this.promos.stream().
+                filter(p -> p.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    public Salles getSallesById(int id) {
+        return this.salles.stream().
+                filter(s -> s.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    public Seances getSeancesById(int id) {
+        return this.seances.stream().
+                filter(s -> s.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    public Users getUsersById(int id) {
+        return this.users.stream().
+                filter(u -> u.getId() == id).
+                collect(Collectors.toList()).
+                get(0);
+    }
+
+    //getters and setters
+    public void setBatiments(ArrayList<Batiments> b) {
+        this.batiments = b;
+    }
+
+    public void setCours(ArrayList<Cours> c) {
+        this.cours = c;
+    }
+
+    public void setPromos(ArrayList<Promos> p) {
+        this.promos = p;
+    }
+
+    public void setSalles(ArrayList<Salles> s) {
+        this.salles = s;
+    }
+
+    public void setSeances(ArrayList<Seances> s) {
+        this.seances = s;
+    }
+
+    public void setUsers(ArrayList<Users> u) {
+        this.users = u;
+    }
+
+    public ArrayList<Batiments> getBatiments() {
+        return batiments;
+    }
+
+    public ArrayList<Cours> getCours() {
+        return cours;
+    }
+
+    public ArrayList<Promos> getPromos() {
+        return promos;
+    }
+
+    public ArrayList<Salles> getSalles() {
+        return salles;
+    }
+
+    public ArrayList<Seances> getSeances() {
+        return seances;
+    }
+
+    public ArrayList<Users> getUsers() {
+        return users;
+    }
+
+}

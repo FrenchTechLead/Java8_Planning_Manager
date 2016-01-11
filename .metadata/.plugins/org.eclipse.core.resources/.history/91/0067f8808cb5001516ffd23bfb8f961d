@@ -1,0 +1,21 @@
+package interface_Graphique.student_mvc;
+
+import allTables.Database;
+import allTables.Users;
+
+public class StudentModel {
+	 private Database db;
+	    
+	    public StudentModel(Database db){
+	        this.db = db;
+	        this.user = user;
+	    }
+
+
+	    
+	    
+	    public Database getDb(){
+	    	return this.db;
+	    }
+
+}

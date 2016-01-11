@@ -1,0 +1,26 @@
+package interface_Graphique.salles_libres_mvc;
+
+import interface_Graphique.student_mvc.StudentController;
+import interface_Graphique.student_mvc.StudentModel;
+import interface_Graphique.student_mvc.StudentView;
+
+public class SallesLibresController {
+	SallesLibresModel model;
+	SallesLibresView view;
+
+	public SallesLibresController(SallesLibresModel model, SallesLibresView view) {
+		this.model = model;
+		this.view = view;
+	}
+
+	public void control() {
+		view.getButton().addActionListener(e ->{
+            this.getSallesLibres();
+            
+        });   
+	}
+	
+	public void getSallesLibres(){
+		
+	}
+}

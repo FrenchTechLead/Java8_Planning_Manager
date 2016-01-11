@@ -1,0 +1,20 @@
+package interface_Graphique.salles_libres_mvc;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
+import allTables.Promos;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Properties;
+
+public class SallesLibresView {
+	
+	public SallesLibresView(){
+		
+	}
+
+}

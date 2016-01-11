@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.apache.commons.lang3.time.DateUtils"/>
+<fullyQualifiedTypeName name="allTables.Database"/>
+<fullyQualifiedTypeName name="interface_Graphique.prof_mvc.ProfModel"/>
+<fullyQualifiedTypeName name="interface_Graphique.prof_mvc.ProfView"/>
+<fullyQualifiedTypeName name="interface_Graphique.prof_mvc.ProfController"/>
+<fullyQualifiedTypeName name="javax.swing.JComboBox"/>
+<fullyQualifiedTypeName name="interface_Graphique.salles_libres_mvc.SallesLibresController"/>
+<fullyQualifiedTypeName name="javax.swing.JFrame"/>
+<fullyQualifiedTypeName name="javax.swing.JButton"/>
+<fullyQualifiedTypeName name="java.sql.Timestamp"/>
+<fullyQualifiedTypeName name="allTables.Salles"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="memoryDatabaseExchange.SallesLoader"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+</qualifiedTypeNameHistroy>

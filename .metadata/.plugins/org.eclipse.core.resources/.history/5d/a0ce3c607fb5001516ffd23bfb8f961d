@@ -1,0 +1,38 @@
+package interface_Graphique;
+
+
+import interface_Graphique.connexion_mvc.*;
+
+import javax.swing.SwingUtilities;
+
+import memoryDatabaseExchange.DatabaseBuilder;
+import memoryDatabaseExchange.DatabaseBuilderLoad;
+import memoryDatabaseExchange.DatabaseDirector;
+import allTables.Database;
+
+
+
+
+public class Main {
+
+	 public static void main(String[] args) {
+     	DatabaseDirector loader = new DatabaseDirector();
+ 		DatabaseBuilder builder = new DatabaseBuilderLoad();
+ 		loader.setBuilder(builder);
+ 		loader.build();
+ 		Database db = loader.getDatabase();
+
+ 		
+	        SwingUtilities.invokeLater(()->{
+
+	        		ConnectionModel connectionModel = new ConnectionModel(db);
+	                ConnectionView connectionView = new ConnectionView(); 
+	                ConnectionController connectionController = new ConnectionController(connectionModel,connectionView);
+	                connectionController.contol();
+
+	            
+	        });  
+
+}
+
+}

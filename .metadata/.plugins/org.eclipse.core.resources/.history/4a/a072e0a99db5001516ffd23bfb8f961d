@@ -1,0 +1,41 @@
+package interface_Graphique.salles_libres_mvc;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
+public class SallesLibresController {
+	SallesLibresModel model;
+	SallesLibresView view;
+
+	public SallesLibresController(SallesLibresModel model, SallesLibresView view) {
+		this.model = model;
+		this.view = view;
+	}
+
+	public void control() {
+		view.getButton().addActionListener(e ->{
+            this.getSallesLibres();
+            
+        });   
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void getSallesLibres(){
+		Date day = (Date)view.getDatePicker().getModel().getValue();
+		if (day == null)day = new Date();
+		Timestamp debut = new Timestamp(day.getTime());
+		Timestamp fin = new Timestamp(day.getTime());
+		
+		debut.setHours((int)view.getHeuresDebut().getSelectedItem());
+		debut.setMinutes((int)view.getMinutesDebut().getSelectedItem());
+		fin.setHours((int)view.getHeuresFin().getSelectedItem());
+		fin.setMinutes((int)view.getMinutesFin().getSelectedItem());
+		System.out.println(debut);
+		System.out.println(fin);
+		
+		String toDisplay = "";
+		System.out.println(model.getDb().freeFromTo(debut, fin));
+		
+		
+	}
+}

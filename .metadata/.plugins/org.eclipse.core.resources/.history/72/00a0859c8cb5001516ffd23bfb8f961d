@@ -1,0 +1,88 @@
+package interface_Graphique.connexion_mvc;
+
+import interface_Graphique.prof_mvc.ProfController;
+import interface_Graphique.prof_mvc.ProfModel;
+import interface_Graphique.prof_mvc.ProfView;
+import interface_Graphique.student_mvc.StudentController;
+import interface_Graphique.student_mvc.StudentModel;
+import interface_Graphique.student_mvc.StudentView;
+import java.util.stream.Collectors;
+import allTables.Users;
+
+
+
+
+public class ConnectionController {
+
+    private ConnectionModel model;
+    private ConnectionView view;
+    private Users user ;
+    
+    public ConnectionController(ConnectionModel model, ConnectionView view){
+        this.model = model;
+        this.view = view;
+        this.user = null;
+    }
+    
+    public void control(){       
+              
+        view.getButton().addActionListener(e ->{
+            checkUser();
+            
+        });   
+    }
+    
+    private void checkUser(){
+    	String username = view.getUserTextField().getText();
+        boolean connected = model.getUsersList().stream().
+        		anyMatch(user->user.
+        				equals(username)); // vérification que le user existe dans notre UsersList
+        
+        if (connected){
+        	user = model.getDb().getUsers().stream().
+        			filter(user -> user.getNom().equals(username)).
+        			collect(Collectors.toList()).get(0);//set current User
+        	System.out.println("\n\n"+user.toString()+" Connected !");
+        	
+        	view.getFrame().dispose();
+
+        	switch (user.getType()){
+        	case "Etudiant" :System.out.println("Student View");
+        	// initialiser la frame etudiant
+        	StudentModel s_model = new StudentModel(model.getDb(), user);
+        	StudentView s_view = new StudentView(model.getDb().getPromos());
+        	StudentController s_controller = new StudentController(s_model, s_view);
+        	s_controller.control();
+        	
+        	break;
+        	
+
+        	case "Prof" :System.out.println("Prof View");
+        	//initialiser la frame Prof
+        	System.out.println("Prof View");
+        	ProfModel p_model = new ProfModel(model.getDb());
+        	ProfView p_view = new ProfView();
+        	ProfController p_controller = new ProfController(p_model, p_view);
+        	p_controller.control();
+        	
+        	break;
+        	
+        	
+        	case "Admin" :System.out.println("Admin View");
+        	//initialiser la frame Admin
+        	System.out.println("Admin View");
+        	
+        	break;
+        	
+        	}
+
+        	
+        }
+        
+        else view.setStatusText("Utilisateur Inconnu !");
+    }    
+    
+    public Users getCurrentUser(){
+    	return this.user;
+    }
+}
